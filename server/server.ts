@@ -1,13 +1,23 @@
-import express from 'express';
+import fs from "node:fs";
+import express from "express";
+import cors from "cors";
 import testRouter from './test/test';
 
+//const express = require('express');
 const app = express();
-app.use(express.json());
+const PORT = 5000;
 
-// test.ts のルーターを /test 配下にマウント
+app.use(cors());
+app.use(express.json());
 app.use('/test', testRouter);
 
-const PORT = process.env.PORT ?? 3000;
 app.listen(PORT, () => {
-  console.log(`server listening on http://localhost:${PORT}`);
-});
+  console.log("Server is runnning on http://localhost:5000");
+})
+
+console.log("Hello TypeScript on Windows!");
+console.log("files:", fs.readdirSync("."));
+
+app.use('/test', testRouter);
+
+
