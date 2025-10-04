@@ -4,6 +4,7 @@ import cors from "cors";
 import testRouter from './test/test';
 import circleTestRouter from './test/circle';
 import userRouter from './user/user';
+import authRouter from './auth/auth';
 
 //const express = require('express');
 const app = express();
@@ -23,6 +24,7 @@ console.log("files:", fs.readdirSync("."));
 app.use('/test', testRouter);
 app.use('/test/api', circleTestRouter);
 app.use('/api/user', userRouter);
+app.use('/auth', authRouter);
 
 
 
