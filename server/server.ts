@@ -2,6 +2,8 @@ import fs from "node:fs";
 import express from "express";
 import cors from "cors";
 import testRouter from './test/test';
+import circleTestRouter from './test/circle';
+import userRouter from './user/user';
 
 //const express = require('express');
 const app = express();
@@ -19,5 +21,8 @@ console.log("Hello TypeScript on Windows!");
 console.log("files:", fs.readdirSync("."));
 
 app.use('/test', testRouter);
+app.use('/test/api', circleTestRouter);
+app.use('/api/user', userRouter);
+
 
 
