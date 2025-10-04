@@ -16,7 +16,7 @@ router.get('/ping', async (_req, res) => {
 router.get('/users', async (_req, res) => {
   try {
     const r = await query(
-      'SELECT id, name, attribute, age FROM app.users ORDER BY id DESC LIMIT 10'
+      'SELECT id, name, attribute, age FROM users ORDER BY id DESC LIMIT 10'
     );
     res.json(r.rows);
   } catch (e: any) {
