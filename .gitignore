@@ -32,6 +32,7 @@ node_modules/
 .env*
 !.env.example
 !.env.template
+!.env.sample
 
 # Next.js のビルド成果物
 # clientフォルダ内に生成される
