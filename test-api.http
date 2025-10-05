@@ -1,0 +1,19 @@
+### 全ユーザー一覧
+GET http://localhost:5000/api/user
+
+### 特定ユーザー情報取得
+GET http://localhost:5000/api/user/2
+
+### ユーザー削除
+DELETE http://localhost:5000/api/user/2
+Content-Type: application/json
+
+### ユーザー更新
+PATCH http://localhost:5000/api/user/2
+Content-Type: application/json
+
+{
+  "name": "Jiro Updated",
+  "age": 19,
+  "attribute": "student"
+}

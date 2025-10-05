@@ -42,7 +42,7 @@ export default function SignInPage() {
 
     if (!formData.password) {
       newErrors.password = 'パスワードは必須です';
-    } else if (formData.password.length < 6) {
+    } else if (formData.password.length < 3) {
       newErrors.password = 'パスワードは6文字以上で入力してください';
     } else if (formData.password.length > 128) {
       newErrors.password = 'パスワードは128文字以内で入力してください';
@@ -64,7 +64,7 @@ export default function SignInPage() {
 
     try {
       // 実際のサインインAPIを呼び出し
-      const response = await fetch('/api/auth/signin', {
+      const response = await fetch('http://localhost:3001/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,12 +79,12 @@ export default function SignInPage() {
       }
 
       // 認証成功時の処理
-      if (result.success && result.user) {
+      if (result.success && result.user_id) {
         // ユーザー情報とトークンをローカルストレージに保存
-        saveAuthSession(result.user, result.token, result.expiresIn);
+        saveAuthSession(result.user_id,result.name);
         
         // 成功メッセージ
-        console.log('サインイン成功:', result.user);
+        console.log('サインイン成功:', result.user_id);
         
         // ホームページにリダイレクト
         router.push('/');
