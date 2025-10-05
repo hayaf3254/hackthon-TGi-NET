@@ -54,4 +54,49 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
+
+
+router.post('/', async (req, res) => {
+  try {
+    const { name, attribute, age, password } = req.body ?? {};
+
+    // --- バリデーション ---
+    if (typeof name !== 'string' || !name.trim()) {
+      return res.status(400).json({ error: 'name は必須です' });
+    }
+    if (typeof password !== 'string' || !password) {
+      return res.status(400).json({ error: 'password は必須です' });
+    }
+    let ageInt: number | null = null;
+    if (age !== undefined && age !== null && age !== '') {
+      const n = Number(age);
+      if (!Number.isInteger(n) || n < 0) {
+        return res.status(400).json({ error: 'age は0以上の整数で指定してください' });
+      }
+      ageInt = n;
+    }
+
+    // --- 登録 ---
+    const insertSql = `
+      INSERT INTO users (name, attribute, age, password)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, name, attribute, age
+    `;
+    const params = [name.trim(), attribute ?? null, ageInt, password];
+
+    const result = await query(insertSql, params);
+    const created = result.rows[0];
+
+    // 201 Created
+    return res.status(201).json(created);
+  } catch (e: any) {
+    // 一意制約（例: name の UNIQUE を付けた場合）
+    if (e?.code === '23505') {
+      return res.status(409).json({ error: '同じ name のユーザーが既に存在します' });
+    }
+    console.error(e);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 export default router;

@@ -22,7 +22,7 @@ console.log("Hello TypeScript on Windows!");
 console.log("files:", fs.readdirSync("."));
 
 app.use('/test', testRouter);
-app.use('/test/api', circleTestRouter);
+app.use('/api', circleTestRouter);
 app.use('/api/user', userRouter);
 app.use('/auth', authRouter);
 
