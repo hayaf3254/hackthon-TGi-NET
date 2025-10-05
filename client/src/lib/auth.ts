@@ -8,29 +8,26 @@ export interface AuthUser {
 }
 
 export interface AuthSession {
-  user: AuthUser;
-  token: string;
-  expiresAt: number; // タイムスタンプ（ミリ秒）
+  user_id: string;
+  name: string;
 }
 
 const AUTH_STORAGE_KEY = 'tgi_net_auth_session';
 
 // セッションをローカルストレージに保存
-export const saveAuthSession = (user: AuthUser, token: string, expiresIn: number): void => {
+export const saveAuthSession = (user_id: string, name: string): void => {
   try {
     const session: AuthSession = {
-      user,
-      token,
-      expiresAt: Date.now() + expiresIn
+      user_id,
+      name,
     };
     
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
     
     // デバッグ用ログ
     console.log('Auth session saved:', {
-      userId: user.id,
-      username: user.username,
-      expiresAt: new Date(session.expiresAt).toISOString()
+      userId: user_id,
+      username: name,
     });
   } catch (error) {
     console.error('Failed to save auth session:', error);
@@ -50,12 +47,6 @@ export const getAuthSession = (): AuthSession | null => {
     }
 
     const session: AuthSession = JSON.parse(sessionData);
-    
-    // セッションの有効期限をチェック
-    if (Date.now() >= session.expiresAt) {
-      removeAuthSession(); // 期限切れのセッションを削除
-      return null;
-    }
 
     return session;
   } catch (error) {
@@ -66,15 +57,9 @@ export const getAuthSession = (): AuthSession | null => {
 };
 
 // 現在のユーザー情報を取得
-export const getCurrentUser = (): AuthUser | null => {
+export const getCurrentUser = (): string | null => {
   const session = getAuthSession();
-  return session?.user || null;
-};
-
-// 現在のユーザーIDを取得
-export const getCurrentUserId = (): string | null => {
-  const user = getCurrentUser();
-  return user?.id || null;
+  return session?.user_id || null;
 };
 
 // ユーザーが認証されているかチェック
@@ -89,75 +74,5 @@ export const removeAuthSession = (): void => {
     console.log('Auth session removed');
   } catch (error) {
     console.error('Failed to remove auth session:', error);
-  }
-};
-
-// セッションの有効期限を延長
-export const refreshAuthSession = (additionalTime: number = 24 * 60 * 60 * 1000): boolean => {
-  try {
-    const session = getAuthSession();
-    if (!session) {
-      return false;
-    }
-
-    session.expiresAt = Date.now() + additionalTime;
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
-    
-    console.log('Auth session refreshed:', {
-      userId: session.user.id,
-      newExpiresAt: new Date(session.expiresAt).toISOString()
-    });
-    
-    return true;
-  } catch (error) {
-    console.error('Failed to refresh auth session:', error);
-    return false;
-  }
-};
-
-// セッションの残り時間を取得（ミリ秒）
-export const getSessionTimeRemaining = (): number => {
-  const session = getAuthSession();
-  if (!session) {
-    return 0;
-  }
-  
-  return Math.max(0, session.expiresAt - Date.now());
-};
-
-// セッションの残り時間を人間が読める形式で取得
-export const getSessionTimeRemainingFormatted = (): string => {
-  const timeRemaining = getSessionTimeRemaining();
-  
-  if (timeRemaining === 0) {
-    return 'セッション期限切れ';
-  }
-  
-  const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-  const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-  
-  if (hours > 0) {
-    return `${hours}時間${minutes}分`;
-  } else {
-    return `${minutes}分`;
-  }
-};
-
-// 開発用：セッション情報をコンソールに出力
-export const debugAuthSession = (): void => {
-  if (process.env.NODE_ENV === 'development') {
-    const session = getAuthSession();
-    console.log('=== Auth Session Debug ===');
-    console.log('Session exists:', !!session);
-    if (session) {
-      console.log('User ID:', session.user.id);
-      console.log('Username:', session.user.username);
-      console.log('Name:', session.user.name);
-      console.log('Type:', session.user.type);
-      console.log('Token:', session.token);
-      console.log('Expires at:', new Date(session.expiresAt).toISOString());
-      console.log('Time remaining:', getSessionTimeRemainingFormatted());
-    }
-    console.log('========================');
   }
 };
