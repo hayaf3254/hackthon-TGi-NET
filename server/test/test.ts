@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { query } from '../db';
+const { Router } = require('express');
+const { query } = require('../db');
 
 const router = Router();
 
 // /test/ping : DBの疎通確認
-router.get('/ping', async (_req, res) => {
+router.get('/ping', async (_req:any, res:any) => {
   try {
     const r = await query('SELECT now() AS now');
     res.json({ ok: true, now: r.rows[0].now });
@@ -13,7 +13,7 @@ router.get('/ping', async (_req, res) => {
   }
 });
 
-router.get('/users', async (_req, res) => {
+router.get('/users', async (_req:any, res:any) => {
   try {
     const r = await query(
       'SELECT id, name, attribute, age FROM users ORDER BY id DESC LIMIT 10'
@@ -25,6 +25,4 @@ router.get('/users', async (_req, res) => {
   }
 });
 
-
-
-export default router;
+module.exports = router;

@@ -1,10 +1,10 @@
-import fs from "node:fs";
-import express from "express";
-import cors from "cors";
-import testRouter from './test/test';
-import circleTestRouter from './test/circle';
-import userRouter from './user/user';
-import authRouter from './auth/auth';
+const fs = require("node:fs");
+const express = require("express");
+const cors = require("cors");
+const { testRouter } = require('./test/test');
+const { circleTestRouter } = require('./test/circle');
+const { userRouter } = require('./user/user');
+const { authRouter } = require('./auth/auth');
 
 //const express = require('express');
 const app = express();

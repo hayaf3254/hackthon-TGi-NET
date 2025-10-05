@@ -1,6 +1,7 @@
 "use client";
 import { getAuthSession } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Circle {
   id: number;
@@ -9,9 +10,17 @@ interface Circle {
   type: "university" | "professional";
 }
 
-const circles: Circle[] = [
-  {
-    id: 1,
+useEffect(() => {
+  const fetchCircles = async () => {
+    // APIからサークルデータを取得する例
+    const response = await fetch("/api/circles");
+    const data = await response.json();
+    fetchCircles(data);
+  }
+)};
+
+
+    /*id: 1,
     name: "東京大学テニスサークル",
     description:
       "週2回のコートでの練習と月1回の大会参加。初心者から上級者まで楽しく活動しています。年間を通して合宿やイベントも開催。",
@@ -51,8 +60,8 @@ const circles: Circle[] = [
     description:
       "関東近郊の山々をハイキングする社会人サークル。自然を楽しみながら健康づくりと仲間作りを目指しています。初心者歓迎。",
     type: "professional",
-  },
-];
+  },*/
+
 
 export default function Home() {
   const router = useRouter();
@@ -76,13 +85,15 @@ export default function Home() {
             <div className="container mx-auto flex justify-between items-center">
               <div className="flex items-center space-x-2"></div>
             </div>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={handleCreateCircle}
+                className="mt-6 bg-indigo-600 hover:bg-indigo-400 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-200"
+              >
+                サークルを作成
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleCreateCircle}
-            className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-200"
-          >
-            サークルを作成
-          </button>
         </header>
 
         <main>
