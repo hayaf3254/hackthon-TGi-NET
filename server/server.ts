@@ -8,7 +8,7 @@ import authRouter from './auth/auth';
 
 //const express = require('express');
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +22,7 @@ console.log("Hello TypeScript on Windows!");
 console.log("files:", fs.readdirSync("."));
 
 app.use('/test', testRouter);
-app.use('/test/api', circleTestRouter);
+app.use('/api', circleTestRouter);
 app.use('/api/user', userRouter);
 app.use('/auth', authRouter);
 

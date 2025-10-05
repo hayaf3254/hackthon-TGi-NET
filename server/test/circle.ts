@@ -6,6 +6,7 @@ const router = Router();
 
 // GET /test/circle - サークル一覧取得（最大10件）
 router.get('/circle', async (_req, res) => {
+  console.log('hello world');
   try {
     const r = await query(
       `SELECT 
@@ -34,8 +35,8 @@ router.post('/circle', async (req, res) => {
 
     // バリデーション
     if (!circle_name || !user_id) {
-      return res.status(400).json({ 
-        error: 'circle_name and user_id are required' 
+      return res.status(400).json({
+        error: 'circle_name and user_id are required'
       });
     }
 
