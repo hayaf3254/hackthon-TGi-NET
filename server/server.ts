@@ -1,14 +1,14 @@
 const fs = require("node:fs");
 const express = require("express");
 const cors = require("cors");
-const { testRouter } = require('./test/test');
-const { circleTestRouter } = require('./test/circle');
-const { userRouter } = require('./user/user');
-const { authRouter } = require('./auth/auth');
+const testRouter = require('./test/test');
+const circleTestRouter = require('./test/circle');
+const userRouter = require('./user/user');
+const authRouter = require('./auth/auth');
 
 //const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());

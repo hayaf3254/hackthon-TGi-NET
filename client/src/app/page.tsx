@@ -4,76 +4,43 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Circle {
-  id: number;
-  name: string;
-  description: string;
+  circle_id: number;
+  circle_name: string;
+  text: string;
+  user_id:number;
   type: "university" | "professional";
 }
-
-useEffect(() => {
-  const fetchCircles = async () => {
-    // APIからサークルデータを取得する例
-    const response = await fetch("/api/circles");
-    const data = await response.json();
-    fetchCircles(data);
-  }
-)};
-
-
-    /*id: 1,
-    name: "東京大学テニスサークル",
-    description:
-      "週2回のコートでの練習と月1回の大会参加。初心者から上級者まで楽しく活動しています。年間を通して合宿やイベントも開催。",
-    type: "university",
-  },
-  {
-    id: 2,
-    name: "社会人フットサルクラブ TOKYO FC",
-    description:
-      "平日夜と土日にフットサルを楽しむ社会人サークル。チームワークを大切にしながら、健康維持と交流を目的に活動中。",
-    type: "professional",
-  },
-  {
-    id: 3,
-    name: "早稲田大学写真研究会",
-    description:
-      "街歩き撮影会や展示会の開催を通じて写真技術を磨く大学サークル。デジタル・フィルム問わず、様々な写真表現を学べます。",
-    type: "university",
-  },
-  {
-    id: 4,
-    name: "渋谷読書会",
-    description:
-      "月2回、カフェで本について語り合う社会人の読書サークル。ジャンルは問わず、新しい本との出会いと知的な交流を楽しんでいます。",
-    type: "professional",
-  },
-  {
-    id: 5,
-    name: "慶應大学軽音楽サークル",
-    description:
-      "バンド活動を中心とした音楽サークル。定期ライブやコンテストへの参加を通じて、音楽スキルの向上と仲間との絆を深めています。",
-    type: "university",
-  },
-  {
-    id: 6,
-    name: "Tokyo Hiking Club",
-    description:
-      "関東近郊の山々をハイキングする社会人サークル。自然を楽しみながら健康づくりと仲間作りを目指しています。初心者歓迎。",
-    type: "professional",
-  },*/
 
 
 export default function Home() {
   const router = useRouter();
   const session = getAuthSession();
+  const [circleList, setCircleList] = useState<Circle[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  if (!session) {
+    router.push("/signin");
+  }
+  }, []);
+
+  useEffect(() => {
+  const fetchCircles = async () => {
+    // APIからサークルデータを取得する例
+    const response = await fetch("http://localhost:3001/api/circle");
+    const data = await response.json();
+    console.log("Fetched circles:", data); // デバッグ用ログ
+    setCircleList(data);
+  }
+
+  fetchCircles();
+}, []);
 
   const handleCreateCircle = () => {
     router.push("/circle");
   };
-  if (!session) {
-    router.push("/signin");
-    return null;
-  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,21 +65,21 @@ export default function Home() {
 
         <main>
           <div className="space-y-6">
-            {circles.map((circle) => (
+            {circleList.map((circle) => (
               <div
-                key={circle.id}
+                key={circle.circle_id}
                 className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-200"
               >
                 <div className="flex justify-between items-start mb-4">
                   <img
-                    src={`/icons/circle${circle.id}.png`}
-                    alt={`${circle.name} Icon`}
+                    src={`/icons/circle${circle.circle_id}.png`}
+                    alt={`${circle.circle_name} Icon`}
                     className="w-16 h-16 rounded-full mr-4"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className="text-xl font-semibold text-gray-900">
-                        {circle.name}
+                        {circle.circle_name}
                       </h2>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -125,7 +92,7 @@ export default function Home() {
                       </span>
                     </div>
                     <p className="text-gray-600 leading-relaxed">
-                      {circle.description}
+                      {circle.text}
                     </p>
                   </div>
                 </div>
