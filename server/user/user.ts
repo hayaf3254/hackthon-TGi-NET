@@ -1,11 +1,11 @@
 // server/user/user.ts
-import { Router } from 'express';
-import { query } from '../db';
+const { Router } =require('express');
+const { query } =require('../db');
 
 const router = Router();
 
 // GET /test/user/:userId - ユーザー情報取得 + 参加申請一覧
-router.get('/:userId', async (req, res) => {
+router.get('/:userId', async (req:any, res:any) => {
   try {
     const uid = Number(req.params.userId);
     if (!Number.isInteger(uid) || uid <= 0) {
@@ -58,7 +58,7 @@ router.get('/:userId', async (req, res) => {
 
 
 //ユーザ登録
-router.post('/', async (req, res) => {
+router.post('/', async (req:any, res:any) => {
   try {
     const { name, attribute, age, password } = req.body ?? {};
 
@@ -123,7 +123,7 @@ router.delete('/:userId',async(req, res) => {
 */
 
 //ユーザー情報更新
-router.patch('/:userId', async(req, res) => {
+router.patch('/:userId', async(req:any, res:any) => {
   try{
     const { userId } = req.params;
     const { name, attribute, age } = req.body;
@@ -175,4 +175,4 @@ router.patch('/:userId', async(req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

@@ -1,11 +1,11 @@
 // server/test/circle.ts
-import { Router } from 'express';
-import { query } from '../db';
+const { Router } = require('express');
+const { query } = require('../db');
 
 const router = Router();
 
 // GET /test/circle - サークル一覧取得（最大10件）
-router.get('/circle', async (_req, res) => {
+router.get('/circle', async (_req:any, res:any) => {
   try {
     const r = await query(
       `SELECT 
@@ -26,7 +26,7 @@ router.get('/circle', async (_req, res) => {
 
 
 //サークル作成
-router.post('/circle', async (req, res) => {
+router.post('/circle', async (req:any, res:any) => {
   try {
     const { circle_name, text, user_id } = req.body;
 
@@ -57,7 +57,7 @@ router.post('/circle', async (req, res) => {
 });
 
 //個別にサークル情報取得
-router.get('/circle/:circleId', async (req, res) => {
+router.get('/circle/:circleId', async (req:any, res:any) => {
   try {
     const { circleId } = req.params;
 
@@ -87,7 +87,7 @@ router.get('/circle/:circleId', async (req, res) => {
 });
 
 //サークル削除
-router.delete('/circle/:circleId', async (req, res) => {
+router.delete('/circle/:circleId', async (req:any, res:any) => {
   try {
     const { circleId } = req.params;
 
@@ -120,7 +120,7 @@ router.delete('/circle/:circleId', async (req, res) => {
 
 
 //参加申請
-router.post('/circle/:circleId', async (req, res) => {
+router.post('/circle/:circleId', async (req:any, res:any) => {
   try {
     const { circleId } = req.params;
     const { user_appliment_id } = req.body;
@@ -173,4 +173,4 @@ router.post('/circle/:circleId', async (req, res) => {
 });
 
 
-export default router;
+module.exports = router;
