@@ -6,7 +6,6 @@ const router = Router();
 
 // GET /test/circle - サークル一覧取得（最大10件）
 router.get('/circle', async (_req, res) => {
-  console.log('hello world');
   try {
     const r = await query(
       `SELECT 
