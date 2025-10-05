@@ -17,6 +17,7 @@ pnpm-debug.log*
 .vscode/
 .idea/
 
+*.code-workspace
 
 # ----------------------------------------------------------------
 # Node.js / Next.js
@@ -24,7 +25,7 @@ pnpm-debug.log*
 
 # 依存関係のパッケージ（最も重要）
 # プロジェクト内のすべてのnode_modulesフォルダを無視する
-**/node_modules
+node_modules/
 
 # 環境変数ファイル (APIキーなどの機密情報)
 # .env.example のようなテンプレートは!で除外してGit管理に含める
@@ -41,6 +42,7 @@ out/
 # serverフォルダ内に生成されることが多い
 dist/
 build/
+*.tsbuildinfo
 
 # Next.js が使用するSWCのキャッシュ
 .swc/
