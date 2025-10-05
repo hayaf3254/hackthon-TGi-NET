@@ -57,6 +57,10 @@ const circles: Circle[] = [
 export default function Home() {
   const router = useRouter();
   const session = getAuthSession();
+
+  const handleCreateCircle = () => {
+    router.push("/circle");
+  };
   if (!session) {
     router.push("/signin");
     return null;
@@ -73,6 +77,12 @@ export default function Home() {
               <div className="flex items-center space-x-2"></div>
             </div>
           </div>
+          <button
+            onClick={handleCreateCircle}
+            className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-200"
+          >
+            サークルを作成
+          </button>
         </header>
 
         <main>
