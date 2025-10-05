@@ -73,6 +73,11 @@ export default function Home() {
                 className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-200"
               >
                 <div className="flex justify-between items-start mb-4">
+                  <img
+                    src={`/icons/circle${circle.id}.png`}
+                    alt={`${circle.name} Icon`}
+                    className="w-16 h-16 rounded-full mr-4"
+                  />
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className="text-xl font-semibold text-gray-900">
