@@ -42,24 +42,19 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="text-center mb-12">
-          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-4 rounded-b-xl">
+        <header className="mb-8">
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-4 rounded-b-xl flex justify-between top-0">
             <h1 className="text-white font-bold text-2xl mb-4 flex">
               Circle Connect
             </h1>
-            <div className="container mx-auto flex justify-between items-center">
-              <div className="flex items-center space-x-2"></div>
-            </div>
-            <div className="flex justify-end mt-6">
               <button
                 onClick={handleCreateCircle}
-                className="mt-6 bg-indigo-600 hover:bg-indigo-400 text-white px-6 py-3 rounded-full font-semibold transition-colors duration-200"
+                className="mt-6 bg-white hover:bg-indigo-400 text-indigo-600 hover:text-white px-6 py-3 rounded-full font-semibold transition-colors duration-200"
               >
                 サークルを作成
               </button>
-            </div>
           </div>
         </header>
 

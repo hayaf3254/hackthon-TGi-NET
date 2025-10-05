@@ -1,21 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAuthSession } from '@/lib/auth';
 
 interface CircleFormData {
-  name: string;
-  description: string;
-  type: 'university' | 'amateur';
-  tags: string[];
-  location: string;
-  activeDays: string[];
+  circle_name: string;
+  text: string;
 }
 
 interface FormErrors {
-  name?: string;
-  description?: string;
-  type?: string;
+  circle_name?: string;
+  text?: string;
   general?: string;
 }
 
@@ -33,38 +29,35 @@ export default function CreateCirclePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [customTag, setCustomTag] = useState('');
+  const [isClient, setIsClient] = useState(false);
+  const session = getAuthSession();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   const [formData, setFormData] = useState<CircleFormData>({
-    name: '',
-    description: '',
-    type: 'university',
-    tags: [],
-    location: '',
-    activeDays: []
+    circle_name: '',
+    text: '',
   });
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'サークル名は必須です';
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = 'サークル名は2文字以上で入力してください';
-    } else if (formData.name.trim().length > 50) {
-      newErrors.name = 'サークル名は50文字以内で入力してください';
+    if (!formData.circle_name.trim()) {
+      newErrors.circle_name = 'サークル名は必須です';
+    } else if (formData.circle_name.trim().length < 2) {
+      newErrors.circle_name = 'サークル名は2文字以上で入力してください';
+    } else if (formData.circle_name.trim().length > 50) {
+      newErrors.circle_name = 'サークル名は50文字以内で入力してください';
     }
 
-    if (!formData.description.trim()) {
-      newErrors.description = '説明は必須です';
-    } else if (formData.description.trim().length < 10) {
-      newErrors.description = '説明は10文字以上で入力してください';
-    } else if (formData.description.trim().length > 500) {
-      newErrors.description = '説明は500文字以内で入力してください';
-    }
-
-    if (!formData.type) {
-      newErrors.type = 'サークルタイプを選択してください';
+    if (!formData.text.trim()) {
+      newErrors.text = '説明は必須です';
+    } else if (formData.text.trim().length < 10) {
+      newErrors.text = '説明は10文字以上で入力してください';
+    } else if (formData.text.trim().length > 500) {
+      newErrors.text = '説明は500文字以内で入力してください';
     }
 
     setErrors(newErrors);
@@ -83,16 +76,16 @@ export default function CreateCirclePage() {
 
     try {
       // TODO: 実際のアプリケーションでは認証されたユーザーIDを使用
-      const ownerId = 'owner-001'; // サンプルユーザーID
+      const user_id = session?.user_id; 
 
-      const response = await fetch('/api/mock/circle', {
+      const response = await fetch('http://localhost:3001/api/circle', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
-          ownerId
+          user_id
         }),
       });
 
@@ -116,42 +109,6 @@ export default function CreateCirclePage() {
     }
   };
 
-  const handleTagToggle = (tag: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.includes(tag)
-        ? prev.tags.filter(t => t !== tag)
-        : [...prev.tags, tag]
-    }));
-  };
-
-  const handleAddCustomTag = () => {
-    const tag = customTag.trim();
-    if (tag && !formData.tags.includes(tag) && formData.tags.length < 10) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...prev.tags, tag]
-      }));
-      setCustomTag('');
-    }
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
-  };
-
-  const handleActiveDayToggle = (day: string) => {
-    setFormData(prev => ({
-      ...prev,
-      activeDays: prev.activeDays.includes(day)
-        ? prev.activeDays.filter(d => d !== day)
-        : [...prev.activeDays, day]
-    }));
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-2xl mx-auto px-4">
@@ -173,49 +130,15 @@ export default function CreateCirclePage() {
               <input
                 type="text"
                 id="name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                value={formData.circle_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, circle_name: e.target.value }))}
                 className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-500 ${
-                  errors.name ? 'border-red-300' : 'border-gray-300'
+                  errors.circle_name ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="サークル名"
                 disabled={isLoading}
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-            </div>
-
-            {/* サークルタイプ */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                サークルタイプ <span className="text-red-500">*</span>
-              </label>
-              <div className="flex space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="type"
-                    value="university"
-                    checked={formData.type === 'university'}
-                    onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'university' | 'amateur' }))}
-                    className="mr-2"
-                    disabled={isLoading}
-                  />
-                  <span className="text-gray-800">大学サークル</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="type"
-                    value="amateur"
-                    checked={formData.type === 'amateur'}
-                    onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as 'university' | 'amateur' }))}
-                    className="mr-2"
-                    disabled={isLoading}
-                  />
-                  <span className="text-gray-800">一般愛好会</span>
-                </label>
-              </div>
-              {errors.type && <p className="mt-1 text-sm text-red-600">{errors.type}</p>}
+              {errors.circle_name && <p className="mt-1 text-sm text-red-600">{errors.circle_name}</p>}
             </div>
 
             {/* 説明 */}
@@ -224,139 +147,20 @@ export default function CreateCirclePage() {
                 説明 <span className="text-red-500">*</span>
               </label>
               <textarea
-                id="description"
+                id="text"
                 rows={4}
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                value={formData.text}
+                onChange={(e) => setFormData(prev => ({ ...prev, text: e.target.value }))}
                 className={`w-full text-gray-700 px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 ${
-                  errors.description ? 'border-red-300' : 'border-gray-300'
+                  errors.text ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="サークルの活動内容や雰囲気を説明してください..."
                 disabled={isLoading}
               />
               <p className="mt-1 text-sm text-gray-500">
-                {formData.description.length}/500文字
+                {formData.text.length}/500文字
               </p>
-              {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
-            </div>
-
-            {/* 活動場所 */}
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                活動場所
-              </label>
-              <input
-                type="text"
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                className="w-full px-3 text-gray-700 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
-                placeholder="例: 〇〇市、××大学△△キャンパス"
-                disabled={isLoading}
-              />
-            </div>
-
-            {/* 活動日 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                活動日
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {DAYS_OF_WEEK.map((day) => (
-                  <label key={day} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={formData.activeDays.includes(day)}
-                      onChange={() => handleActiveDayToggle(day)}
-                      className="mr-2"
-                      disabled={isLoading}
-                    />
-                    <span className="text-sm text-gray-800">{day}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* タグ */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                タグ
-              </label>
-              
-              {/* 選択されたタグ */}
-              {formData.tags.length > 0 && (
-                <div className="mb-3">
-                  <div className="flex flex-wrap gap-2">
-                    {formData.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
-                      >
-                        {tag}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTag(tag)}
-                          className="ml-2 text-blue-600 hover:text-blue-800"
-                          disabled={isLoading}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 人気タグ */}
-              <div className="mb-3">
-                <p className="text-sm text-gray-600 mb-2">人気のタグ:</p>
-                <div className="flex flex-wrap gap-2">
-                  {POPULAR_TAGS.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => handleTagToggle(tag)}
-                      className={`px-3 py-1 rounded-full text-sm border transition-colors ${
-                        formData.tags.includes(tag)
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-300'
-                      }`}
-                      disabled={isLoading || (formData.tags.length >= 10 && !formData.tags.includes(tag))}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* カスタムタグ追加 */}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={customTag}
-                  onChange={(e) => setCustomTag(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 placeholder-gray-500"
-                  placeholder="カスタムタグを追加..."
-                  disabled={isLoading || formData.tags.length >= 10}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddCustomTag();
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddCustomTag}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 disabled:opacity-50"
-                  disabled={!customTag.trim() || formData.tags.includes(customTag.trim()) || formData.tags.length >= 10 || isLoading}
-                >
-                  追加
-                </button>
-              </div>
-              <p className="mt-1 text-sm text-gray-500">
-                最大10個まで選択できます ({formData.tags.length}/10)
-              </p>
+              {errors.text && <p className="mt-1 text-sm text-red-600">{errors.text}</p>}
             </div>
 
             {/* 送信ボタン */}
