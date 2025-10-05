@@ -7,7 +7,7 @@ const router = Router();
 
 router.get('/:userId', async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { name,userId } = req.params;
 
     const r = await query(
       `SELECT 
@@ -18,8 +18,8 @@ router.get('/:userId', async (req, res) => {
         created_at,
         updated_at
       FROM users
-      WHERE id = $1`,
-      [userId]
+      WHERE id = $1 and id = $2`,
+      [name,userId]
     );
 
     if (r.rows.length === 0) {
