@@ -7,9 +7,12 @@ const router = Router();
 // GET /test/user/:userId - ユーザー情報取得 + 参加申請一覧
 router.get('/:userId', async (req, res) => {
   try {
-    const { userId } = req.params;
+    const uid = Number(req.params.userId);
+    if (!Number.isInteger(uid) || uid <= 0) {
+      return res.status(400).json({ error: 'invalid userId' });
+    }
 
-    // ユーザー情報を取得
+    // ユーザー情報を取得（created_at / updated_at を含む）
     const userResult = await query(
       `SELECT 
         id,
@@ -20,37 +23,36 @@ router.get('/:userId', async (req, res) => {
         updated_at
       FROM users
       WHERE id = $1`,
-      [userId]
+      [uid]
     );
 
     if (userResult.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
-
+    }
 
     const user = userResult.rows[0];
 
-    // そのユーザーが作成したサークルへの参加申請を取得
-    // user_owner_id = userId のものを検索
+    // そのユーザーが作成したサークルへの参加申請（申込者ID一覧）
     const applicationsResult = await query(
-      `SELECT 
-      user_appliment_id
-      FROM apply_circles
-      WHERE user_owner_id = $1`,
-      [userId]
+      `SELECT user_appliment_id
+       FROM apply_circles
+       WHERE user_owner_id = $1`,
+      [uid]
     );
 
-    // user_appliment_id を配列に変換
-    const appliment_ids = applicationsResult.rows.map(row => row.user_appliment_id);
+    const appliment_ids = applicationsResult.rows.map(
+      (row: any) => row.user_appliment_id
+    );
 
     // レスポンス
-    res.status(200).json({
-      ...user,
-      appliment_ids: appliment_ids
+    return res.status(200).json({
+      ...user,            // id, name, attribute, age, created_at, updated_at
+      appliment_ids
     });
 
   } catch (e: any) {
     console.error(e);
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 
