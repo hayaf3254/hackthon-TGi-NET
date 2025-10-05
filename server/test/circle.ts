@@ -119,8 +119,58 @@ router.delete('/circle/:circleId', async (req, res) => {
 });
 
 
+//参加申請
+router.post('/circle/:circleId', async (req, res) => {
+  try {
+    const { circleId } = req.params;
+    const { user_appliment_id } = req.body;
 
+    if (!user_appliment_id) {
+      return res.status(400).json({ error: 'user_appliment_id is required' });
+    }
 
+    // サークルの存在確認と owner_id 取得
+    const circleResult = await query(
+      'SELECT user_owner_id FROM circles WHERE circle_id = $1',
+      [circleId]
+    );
+    if (circleResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Circle not found' });
+    }
+    const user_owner_id = circleResult.rows[0].user_owner_id;
+
+    // 参加申請（★ INSERT は1回だけ）
+    const appResult = await query(
+      `INSERT INTO apply_circles (circle_id, user_owner_id, user_appliment_id, auth)
+       VALUES ($1, $2, $3, FALSE)
+       RETURNING application_id, circle_id, user_owner_id, user_appliment_id, auth`,
+      [circleId, user_owner_id, user_appliment_id]
+    );
+    const appRow = appResult.rows[0];
+
+    // 応募者の name だけ取得
+    const userResult = await query(
+      `SELECT name FROM users WHERE id = $1`,
+      [user_appliment_id]
+    );
+    const applicant_name = userResult.rows[0]?.name ?? null;
+    const name = userResult.rows[0]?.name ?? null;
+
+    return res.status(201).json({
+      success:201,
+      name
+    });
+  } catch (e: any) {
+    console.error(e);
+    if (e.code === '23505') { // 重複申請など
+      return res.status(409).json({ error: 'Application already exists' });
+    }
+    if (e.code === '23503') { // 外部キー不整合
+      return res.status(400).json({ error: 'Invalid foreign key' });
+    }
+    return res.status(500).json({ error: e.message });
+  }
+});
 
 
 export default router;
