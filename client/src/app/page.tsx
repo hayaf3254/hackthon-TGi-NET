@@ -1,3 +1,7 @@
+"use client";
+import { getAuthSession } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+
 interface Circle {
   id: number;
   name: string;
@@ -51,6 +55,12 @@ const circles: Circle[] = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const session = getAuthSession();
+  if (!session) {
+    router.push("/signin");
+    return null;
+  }
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
