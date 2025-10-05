@@ -119,6 +119,54 @@ router.delete('/circle/:circleId', async (req, res) => {
 });
 
 
+//参加申請
+router.post('/circle/:circleId', async (req, res) => {
+  try {
+    const { circleId } = req.params;
+    const { user_appliment_id } = req.body;
+
+    console.log('Application request:', { circleId, user_appliment_id }); // デバッグ用
+
+    // バリデーション
+    if (!user_appliment_id) {
+      return res.status(400).json({ 
+        error: 'user_appliment_id is required' 
+      });
+    }
+
+    // サークルの存在確認と owner_id 取得
+    const circleResult = await query(
+      'SELECT user_owner_id FROM circles WHERE circle_id = $1',
+      [circleId]
+    );
+
+    if (circleResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Circle not found' });
+    }
+
+    const user_owner_id = circleResult.rows[0].user_owner_id;
+
+    // 参加申請を追加
+    const r = await query(
+      `INSERT INTO apply_circles (circle_id, user_owner_id, user_appliment_id, auth)
+       VALUES ($1, $2, $3, FALSE)
+       RETURNING application_id, circle_id, user_owner_id, user_appliment_id, auth, created_at`,
+      [circleId, user_owner_id, user_appliment_id]
+    );
+
+    res.status(200).json({
+      success: 200,
+      data: r.rows[0]
+    });
+  } catch (e: any) {
+    console.error(e);
+    // 重複申請などのエラーハンドリング
+    if (e.code === '23505') { // unique violation
+      return res.status(409).json({ error: 'Application already exists' });
+    }
+    res.status(500).json({ error: e.message });
+  }
+});
 
 
 
