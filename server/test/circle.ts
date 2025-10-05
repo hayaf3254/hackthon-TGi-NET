@@ -34,8 +34,8 @@ router.post('/circle', async (req:any, res:any) => {
 
     // バリデーション
     if (!circle_name || !user_id) {
-      return res.status(400).json({ 
-        error: 'circle_name and user_id are required' 
+      return res.status(400).json({
+        error: 'circle_name and user_id are required'
       });
     }
 

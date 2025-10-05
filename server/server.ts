@@ -1,10 +1,10 @@
 const fs = require("node:fs");
 const express = require("express");
 const cors = require("cors");
-const {testRouter} = require('./test/test');
-const {circleTestRouter} = require('./test/circle');
-const {userRouter} = require('./user/user');
-const {authRouter} = require('./auth/auth');
+const { testRouter } = require('./test/test');
+const { circleTestRouter } = require('./test/circle');
+const { userRouter } = require('./user/user');
+const { authRouter } = require('./auth/auth');
 
 //const express = require('express');
 const app = express();
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use('/test', testRouter);
 
 app.listen(PORT, () => {
-  console.log("Server is runnning on http://localhost:3001");
+    console.log("Server is runnning on http://localhost:3001");
 })
 
 console.log("Hello TypeScript on Windows!");
