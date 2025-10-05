@@ -1,11 +1,11 @@
 // server/auth/auth.ts
-import { Router } from 'express';
-import { query } from '../db';
+const { Router } = require('express');
+const { query } = require('../db');
 
 const router = Router();
 
 // POST /test/auth - 認証（仮）
-router.post('/', async (req, res) => {
+router.post('/', async (req:any, res:any) => {
   try {
     const { password } = req.body;
 
@@ -41,4 +41,4 @@ router.post('/', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
